@@ -1,23 +1,15 @@
+-- Sistema de gestion escolar 
 
---Sistema de Gestión Escolar (SGE)
+ Este proyecto esta enfocado a las instituciones rurales que no cuentan con un sistema dijistal. 
 
-Sistema web progresivo (PWA) para la gestión académica de múltiples colegios, enfocado en entornos rurales con conectividad limitada.
+-- Funciones iniciales
 
---Características
+ . Registro de estuantes 
 
-- Multi-colegio
-- Registro de notas
-- Control de asistencia
-- Generación de reportes
-- Modo offline (PWA)
-- Integración futura con IA
+ . Gestion de notas 
+ 
+ . control de asitencia 
 
---Tecnologías
+-- Autor
 
-- Backend: Python + FastAPI
-- Base de datos: MySQL
-- Frontend: HTML, CSS, JavaScript
-
---Estado
-
-En desarrollo (fase inicial)
+Proyecto desarrollado por Jaime como parte de su formación en análisis y desarrollo de software.
