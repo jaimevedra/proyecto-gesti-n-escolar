@@ -1,2 +1,11 @@
+# Entorno virtual
 venv/
 backend/venv/
+
+# Archivos compilados de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Variables de entorno (seguridad)
+.env
