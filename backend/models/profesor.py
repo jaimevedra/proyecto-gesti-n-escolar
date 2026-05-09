@@ -11,6 +11,7 @@ class Profesor(Base):
     nombre = Column(String(100), nullable=False)
     apellido = Column(String(100), nullable=False)
     email = Column(String(100), unique=True)
+    password = Column(String(255))
     activo = Column(Boolean, default=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
 

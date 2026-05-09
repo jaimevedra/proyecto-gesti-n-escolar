@@ -7,6 +7,7 @@ from routes import estudiante as estudiante_routes
 from routes import nota as nota_routes
 from routes import asistencia as asistencia_routes
 from routes import materia as materia_routes
+from routes import auth as auth_routes
 
 # Crear las tablas si no existen
 Base.metadata.create_all(bind=engine)
@@ -18,6 +19,7 @@ app = FastAPI(
 )
 
 # Registrar rutas
+app.include_router(auth_routes.router)
 app.include_router(colegio_routes.router)
 app.include_router(profesor_routes.router)
 app.include_router(estudiante_routes.router)
