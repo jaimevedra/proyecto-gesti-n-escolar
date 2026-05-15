@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.security import HTTPBearer
 from database import Base, engine
 from models import colegio, profesor, estudiante, materia, nota, asistencia
 from routes import colegio as colegio_routes
@@ -8,6 +9,7 @@ from routes import nota as nota_routes
 from routes import asistencia as asistencia_routes
 from routes import materia as materia_routes
 from routes import auth as auth_routes
+from routes import ia as ia_routes
 
 # Crear las tablas si no existen
 Base.metadata.create_all(bind=engine)
@@ -18,6 +20,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
+security = HTTPBearer()
+
 # Registrar rutas
 app.include_router(auth_routes.router)
 app.include_router(colegio_routes.router)
@@ -26,6 +30,7 @@ app.include_router(estudiante_routes.router)
 app.include_router(materia_routes.router)
 app.include_router(nota_routes.router)
 app.include_router(asistencia_routes.router)
+app.include_router(ia_routes.router)
 
 @app.get("/")
 def home():
