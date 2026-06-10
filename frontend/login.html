@@ -112,6 +112,8 @@
                 localStorage.setItem('token', datos.access_token);
                 localStorage.setItem('nombre', datos.nombre);
                 localStorage.setItem('apellido', datos.apellido);
+                localStorage.setItem('rol', datos.rol);
+                localStorage.setItem('grado_asignado', datos.grado_asignado || '');
 
                 window.location.href = 'dashboard.html';
 

@@ -5,6 +5,8 @@ from models.estudiante import Estudiante
 from models.colegio import Colegio
 from schemas.estudiante import EstudianteCrear, EstudianteRespuesta
 from typing import List
+from auth import obtener_profesor_actual
+from models.profesor import Profesor
 
 router = APIRouter(
     prefix="/estudiantes",
@@ -54,3 +56,23 @@ def obtener_estudiantes_por_grado(colegio_id: int, grado: str, db: Session = Dep
         Estudiante.activo == True
     ).all()
     return estudiantes
+# Endpoint para desactivar un estudiante
+@router.patch("/{estudiante_id}")
+def desactivar_estudiante(
+    estudiante_id: int,
+    db: Session = Depends(get_db),
+    profesor_actual: Profesor = Depends(obtener_profesor_actual)
+):
+    if profesor_actual.rol not in ["rector", "director"]:
+        raise HTTPException(status_code=403, detail="No tienes permisos para realizar esta acción")
+
+    estudiante = db.query(Estudiante).filter(Estudiante.id == estudiante_id).first()
+    if not estudiante:
+        raise HTTPException(status_code=404, detail="Estudiante no encontrado")
+
+    if profesor_actual.rol == "director" and estudiante.grado != profesor_actual.grado_asignado:
+        raise HTTPException(status_code=403, detail="Solo puedes desactivar estudiantes de tu grado")
+
+    estudiante.activo = False
+    db.commit()
+    return {"mensaje": "Estudiante desactivado correctamente"}
