@@ -18,7 +18,10 @@ class ProfesorRegistro(BaseModel):
     apellido: str
     email: str
     password: str
-
+    rol: str = "profesor"
+    grado_asignado: str = None
+    materia_asignada_id: int = None
+    
 # Endpoint para registrar un profesor con password
 @router.post("/registro")
 def registrar_profesor(datos: ProfesorRegistro, db: Session = Depends(get_db)):
@@ -31,7 +34,10 @@ def registrar_profesor(datos: ProfesorRegistro, db: Session = Depends(get_db)):
         nombre=datos.nombre,
         apellido=datos.apellido,
         email=datos.email,
-        password=encriptar_password(datos.password)
+        password=encriptar_password(datos.password),
+        rol=datos.rol,
+        grado_asignado=datos.grado_asignado,
+        materia_asignada_id=datos.materia_asignada_id
     )
     db.add(nuevo_profesor)
     db.commit()

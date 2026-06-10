@@ -12,6 +12,9 @@ class Profesor(Base):
     apellido = Column(String(100), nullable=False)
     email = Column(String(100), unique=True)
     password = Column(String(255))
+    rol = Column(String(20), default="profesor")
+    grado_asignado = Column(String(20))
+    materia_asignada_id = Column(Integer, ForeignKey("materias.id"), nullable=True)
     activo = Column(Boolean, default=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
 
