@@ -52,7 +52,27 @@
 
     <!-- Contenido principal -->
     <main class="max-w-5xl mx-auto px-6 py-8">
-
+       <!-- Filtro por grado -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
+            <div class="flex items-center gap-3">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por grado:</label>
+                <select id="filtroGrado" onchange="filtrarPorGrado()" class="border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-gray-800 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Todos los grados</option>
+                    <option value="1°">Grado 1°</option>
+                    <option value="2°">Grado 2°</option>
+                    <option value="3°">Grado 3°</option>
+                    <option value="4°">Grado 4°</option>
+                    <option value="5°">Grado 5°</option>
+                    <option value="6°">Grado 6°</option>
+                    <option value="7°">Grado 7°</option>
+                    <option value="8°">Grado 8°</option>
+                    <option value="9°">Grado 9°</option>
+                    <option value="10°">Grado 10°</option>
+                    <option value="11°">Grado 11°</option>
+                </select>
+                <span id="totalFiltrado" class="text-sm text-gray-500 dark:text-gray-400"></span>
+            </div>
+        </div>
         <!-- Título y botón agregar -->
         <div class="flex items-center justify-between mb-6">
             <div>
@@ -125,16 +145,26 @@
 
         document.getElementById('nombreProfesor').textContent = `${nombre} ${apellido}`;
 
-        async function cargarEstudiantes() {
+        async function cargarEstudiantes(grado = '') {
             try {
-                const res = await fetch('http://127.0.0.1:8000/estudiantes/', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const headers = { 'Authorization': `Bearer ${token}` };
+                let url = 'http://127.0.0.1:8000/estudiantes/';
+
+                if (grado) {
+                    url = `http://127.0.0.1:8000/estudiantes/colegio/1/grado/${encodeURIComponent(grado)}`;
+                } else {
+                    url = 'http://127.0.0.1:8000/estudiantes/';
+                }
+
+                const res = await fetch(url, { headers });
                 const estudiantes = await res.json();
                 const lista = document.getElementById('listaEstudiantes');
+                const total = document.getElementById('totalFiltrado');
+
+                total.textContent = `${estudiantes.length} estudiante(s)`;
 
                 if (estudiantes.length === 0) {
-                    lista.innerHTML = '<div class="p-6 text-center text-gray-500 dark:text-gray-400">No hay estudiantes registrados</div>';
+                    lista.innerHTML = '<div class="p-6 text-center text-gray-500 dark:text-gray-400">No hay estudiantes en este grado</div>';
                     return;
                 }
 
@@ -142,9 +172,9 @@
                 const gradoAsignado = localStorage.getItem('grado_asignado');
 
                 lista.innerHTML = estudiantes.map(e => {
-                    const puedeDesactivar = rol === 'rector' || 
+                    const puedeDesactivar = rol === 'rector' ||
                         (rol === 'director' && e.grado === gradoAsignado);
-                    
+
                     return `
                     <div class="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
                         <div class="flex items-center gap-4">
@@ -166,9 +196,15 @@
                         </div>
                     </div>`;
                 }).join('');
+
             } catch (error) {
                 console.error('Error:', error);
             }
+        }
+
+        function filtrarPorGrado() {
+            const grado = document.getElementById('filtroGrado').value;
+            cargarEstudiantes(grado);
         }
 
         async function agregarEstudiante() {

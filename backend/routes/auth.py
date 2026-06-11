@@ -60,5 +60,6 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         "nombre": profesor.nombre,
         "apellido": profesor.apellido,
         "rol": profesor.rol,
-        "grado_asignado": profesor.grado_asignado
+        "grado_asignado": profesor.grado_asignado,
+        "id": profesor.id
     }

@@ -26,7 +26,7 @@ def registrar_asistencia(
     if not db.query(Estudiante).filter(Estudiante.id == asistencia.estudiante_id).first():
         raise HTTPException(status_code=404, detail="Estudiante no encontrado")
     if not db.query(Materia).filter(Materia.id == asistencia.materia_id).first():
-        raise HTTPException(status_code=404, detail="Materia no encontrada")
+        raise HTTPException(status_code=404, detail="Asignatura no encontrada")
     if not db.query(Profesor).filter(Profesor.id == asistencia.profesor_id).first():
         raise HTTPException(status_code=404, detail="Profesor no encontrado")
 

@@ -26,7 +26,7 @@ def crear_nota(
     if not db.query(Estudiante).filter(Estudiante.id == nota.estudiante_id).first():
         raise HTTPException(status_code=404, detail="Estudiante no encontrado")
     if not db.query(Materia).filter(Materia.id == nota.materia_id).first():
-        raise HTTPException(status_code=404, detail="Materia no encontrada")
+        raise HTTPException(status_code=404, detail="Asignatura no encontrada")
     if not db.query(Profesor).filter(Profesor.id == nota.profesor_id).first():
         raise HTTPException(status_code=404, detail="Profesor no encontrado")
 
@@ -42,3 +42,42 @@ def crear_nota(
     db.commit()
     db.refresh(nueva_nota)
     return nueva_nota
+
+# Endpoint para obtener notas de un estudiante
+@router.get("/estudiante/{estudiante_id}", response_model=List[NotaRespuesta])
+def obtener_notas_estudiante(
+    estudiante_id: int,
+    db: Session = Depends(get_db),
+    profesor_actual: Profesor = Depends(obtener_profesor_actual)
+):
+    notas = db.query(Nota).filter(Nota.estudiante_id == estudiante_id).all()
+    return notas
+
+# Endpoint para calcular el promedio de un estudiante por materia y periodo
+@router.get("/promedio/{estudiante_id}/{materia_id}/{periodo}", response_model=PromedioRespuesta)
+def obtener_promedio(
+    estudiante_id: int,
+    materia_id: int,
+    periodo: int,
+    db: Session = Depends(get_db),
+    profesor_actual: Profesor = Depends(obtener_profesor_actual)
+):
+    resultado = db.query(
+        func.avg(Nota.nota).label("promedio"),
+        func.count(Nota.id).label("total_notas")
+    ).filter(
+        Nota.estudiante_id == estudiante_id,
+        Nota.materia_id == materia_id,
+        Nota.periodo == periodo
+    ).first()
+
+    if not resultado.promedio:
+        raise HTTPException(status_code=404, detail="No hay notas registradas")
+
+    return PromedioRespuesta(
+        estudiante_id=estudiante_id,
+        materia_id=materia_id,
+        periodo=periodo,
+        promedio=round(resultado.promedio, 2),
+        total_notas=resultado.total_notas
+    )
