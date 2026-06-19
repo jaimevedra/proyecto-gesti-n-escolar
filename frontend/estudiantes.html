@@ -58,6 +58,8 @@
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por grado:</label>
                 <select id="filtroGrado" onchange="filtrarPorGrado()" class="border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2 text-gray-800 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">Todos los grados</option>
+                    <option value="Jardín">Jardín</option>
+                    <option value="Transición">Transición</option>
                     <option value="1°">Grado 1°</option>
                     <option value="2°">Grado 2°</option>
                     <option value="3°">Grado 3°</option>
@@ -103,8 +105,22 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Grado</label>
-                    <input type="text" id="grado" placeholder="Ej: 6°"
-                        class="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2.5 text-gray-800 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="grado" class="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2.5 text-gray-800 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Selecciona un grado</option>
+                        <option value="Jardín">Jardín</option>
+                        <option value="Transición">Transición</option>
+                        <option value="1°">Grado 1°</option>
+                        <option value="2°">Grado 2°</option>
+                        <option value="3°">Grado 3°</option>
+                        <option value="4°">Grado 4°</option>
+                        <option value="5°">Grado 5°</option>
+                        <option value="6°">Grado 6°</option>
+                        <option value="7°">Grado 7°</option>
+                        <option value="8°">Grado 8°</option>
+                        <option value="9°">Grado 9°</option>
+                        <option value="10°">Grado 10°</option>
+                        <option value="11°">Grado 11°</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha de nacimiento</label>
@@ -148,13 +164,9 @@
         async function cargarEstudiantes(grado = '') {
             try {
                 const headers = { 'Authorization': `Bearer ${token}` };
-                let url = 'http://127.0.0.1:8000/estudiantes/';
-
-                if (grado) {
-                    url = `http://127.0.0.1:8000/estudiantes/colegio/1/grado/${encodeURIComponent(grado)}`;
-                } else {
-                    url = 'http://127.0.0.1:8000/estudiantes/';
-                }
+                let url = grado
+                    ? `http://127.0.0.1:8000/estudiantes/colegio/1/grado/${encodeURIComponent(grado)}`
+                    : 'http://127.0.0.1:8000/estudiantes/';
 
                 const res = await fetch(url, { headers });
                 const estudiantes = await res.json();
@@ -164,42 +176,92 @@
                 total.textContent = `${estudiantes.length} estudiante(s)`;
 
                 if (estudiantes.length === 0) {
-                    lista.innerHTML = '<div class="p-6 text-center text-gray-500 dark:text-gray-400">No hay estudiantes en este grado</div>';
+                    lista.innerHTML = '<div class="p-6 text-center text-gray-500 dark:text-gray-400">No hay estudiantes</div>';
                     return;
                 }
 
                 const rol = localStorage.getItem('rol');
                 const gradoAsignado = localStorage.getItem('grado_asignado');
 
-                lista.innerHTML = estudiantes.map(e => {
-                    const puedeDesactivar = rol === 'rector' ||
-                        (rol === 'director' && e.grado === gradoAsignado);
+                // Si ya se filtró por un grado específico, mostrar lista plana
+                if (grado) {
+                    lista.innerHTML = renderizarEstudiantes(estudiantes, rol, gradoAsignado);
+                    return;
+                }
 
+                // Si no hay filtro, agrupar por grado en acordeones
+                const porGrado = {};
+                estudiantes.forEach(e => {
+                    if (!porGrado[e.grado]) porGrado[e.grado] = [];
+                    porGrado[e.grado].push(e);
+                });
+
+                const ordenGrados = ['Jardín', 'Transición', '1°', '2°', '3°', '4°', '5°', '6°', '7°', '8°', '9°', '10°', '11°'];
+                const gradosOrdenados = Object.keys(porGrado).sort(
+                    (a, b) => ordenGrados.indexOf(a) - ordenGrados.indexOf(b)
+                );
+
+                lista.innerHTML = gradosOrdenados.map(g => {
+                    const idGrado = `grado-${g.replace('°', '').replace('í', 'i')}`;
                     return `
-                    <div class="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
-                        <div class="flex items-center gap-4">
-                            <div class="bg-blue-100 dark:bg-blue-900 rounded-full w-10 h-10 flex items-center justify-center">
-                                <span class="text-blue-600 dark:text-blue-300 font-semibold text-sm">${e.nombre[0]}${e.apellido[0]}</span>
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-800 dark:text-white">${e.nombre} ${e.apellido}</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Grado ${e.grado}</p>
+                        <div class="border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                            <button onclick="toggleGrado('${idGrado}')"
+                                class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+                                <div class="flex items-center gap-2">
+                                    <svg id="flecha-${idGrado}" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="text-gray-500 dark:text-gray-400 transition duration-200" style="transform: rotate(-90deg);">
+                                        <path d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                    <span class="font-semibold text-gray-800 dark:text-white">${g}</span>
+                                </div>
+                                <span class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-3 py-1 rounded-full">
+                                    ${porGrado[g].length} estudiante(s)
+                                </span>
+                            </button>
+                            <div id="${idGrado}" class="hidden divide-y divide-gray-100 dark:divide-gray-700">
+                                ${renderizarEstudiantes(porGrado[g], rol, gradoAsignado)}
                             </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="text-xs bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-300 px-3 py-1 rounded-full">Activo</span>
-                            ${puedeDesactivar ? `
-                            <button onclick="desactivarEstudiante(${e.id})"
-                                class="text-xs bg-red-50 dark:bg-red-900 text-red-600 dark:text-red-300 hover:bg-red-100 px-3 py-1 rounded-full transition duration-150">
-                                Desactivar
-                            </button>` : ''}
-                        </div>
-                    </div>`;
+                    `;
                 }).join('');
 
             } catch (error) {
                 console.error('Error:', error);
             }
+        }
+
+        function renderizarEstudiantes(estudiantes, rol, gradoAsignado) {
+            return estudiantes.map(e => {
+                const puedeDesactivar = rol === 'rector' ||
+                    (rol === 'director' && e.grado === gradoAsignado);
+
+                return `
+                <div class="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-blue-100 dark:bg-blue-900 rounded-full w-10 h-10 flex items-center justify-center">
+                            <span class="text-blue-600 dark:text-blue-300 font-semibold text-sm">${e.nombre[0]}${e.apellido[0]}</span>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-800 dark:text-white">${e.nombre} ${e.apellido}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Grado ${e.grado}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-300 px-3 py-1 rounded-full">Activo</span>
+                        ${puedeDesactivar ? `
+                        <button onclick="desactivarEstudiante(${e.id})"
+                            class="text-xs bg-red-50 dark:bg-red-900 text-red-600 dark:text-red-300 hover:bg-red-100 px-3 py-1 rounded-full transition duration-150">
+                            Desactivar
+                        </button>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleGrado(id) {
+            const contenido = document.getElementById(id);
+            const flecha = document.getElementById(`flecha-${id}`);
+            contenido.classList.toggle('hidden');
+            flecha.style.transform = contenido.classList.contains('hidden') ? 'rotate(-90deg)' : 'rotate(0deg)';
         }
 
         function filtrarPorGrado() {
