@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGE - Asistencia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition duration-300">
+
+    <!-- Barra de navegación -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <a href="dashboard.html" class="flex items-center gap-3">
+                <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl p-2">
+                    <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M24 10C24 10 14 7 6 10V38C14 35 24 38 24 38C24 38 34 35 42 38V10C34 7 24 10 24 10Z" fill="white" fill-opacity="0.15"/>
+                        <path d="M24 10V38" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M6 10C14 7 24 10 24 10V38C14 35 6 38 6 38V10Z" fill="white" fill-opacity="0.3"/>
+                        <path d="M42 10C34 7 24 10 24 10V38C34 35 42 38 42 38V10Z" fill="white" fill-opacity="0.2"/>
+                    </svg>
+                </div>
+                <span class="font-bold text-gray-800 dark:text-white text-lg">SGE</span>
+            </a>
+        </div>
+        <div class="flex items-center gap-4">
+            <span id="nombreProfesor" class="text-gray-600 dark:text-gray-300 text-sm"></span>
+            <button onclick="cerrarSesion()" class="text-sm text-red-500 hover:text-red-700 font-medium">
+                Cerrar sesión
+            </button>
+            <button onclick="toggleModo()" class="bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-2 hover:shadow-md transition duration-200">
+                <svg id="iconoSol" width="18" height="18" fill="none" stroke="#374151" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+                <svg id="iconoLuna" class="hidden" width="18" height="18" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="max-w-5xl mx-auto px-6 py-8">
+
+        <!-- Título -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Asistencia</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">Registra y consulta la asistencia de los estudiantes</p>
+        </div>
+
+        <!-- Formulario registrar asistencia -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Registrar asistencia</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Grado</label>
+                    <select id="filtroGrado" onchange="cargarEstudiantesPorGrado()" class="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2.5 text-gray-800 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Selecciona un grado</option>
+                        <option value="1°">Grado 1°</option>
+                        <option value="2°">Grado 2°</option>
+                        <option value="3°">Grado 3°</option>
+                        <option value="4°">Grado 4°</option>
+                        <option value="5°">Grado 5°</option>
+                        <option value="6°">Grado 6°</option>
+                        <option value="7°">Grado 7°</option>
+                        <option value="8°">Grado 8°</option>
+                        <option value="9°">Grado 9°</option>
+                        <option value="10°">Grado 10°</option>
+                        <option value="11°">Grado 11°</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Asignatura</label>
+                    <select id="materiaId" class="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2.5 text-gray-800 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Selecciona una asignatura</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha</label>
+                    <input type="date" id="fecha" class="w-full border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2.5 text-gray-800 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <!-- Lista de estudiantes para marcar asistencia -->
+            <div id="listaAsistencia" class="mt-4"></div>
+
+            <div class="mt-4">
+                <button onclick="guardarAsistencia()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl transition duration-200">
+                    Guardar asistencia
+                </button>
+            </div>
+            <div id="mensajeError" class="hidden mt-3 bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3"></div>
+            <div id="mensajeExito" class="hidden mt-3 bg-green-50 text-green-600 text-sm rounded-xl px-4 py-3"></div>
+        </div>
+
+        <!-- Consultar resumen de asistencia -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Resumen de asistencia</h2>
+            <div class="flex gap-3 mb-4">
+                <select id="estudianteResumen" class="flex-1 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2.5 text-gray-800 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Selecciona un estudiante</option>
+                </select>
+                <select id="materiaResumen" class="flex-1 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2.5 text-gray-800 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Selecciona una asignatura</option>
+                </select>
+                <button onclick="consultarResumen()" class="bg-gray-800 dark:bg-gray-600 hover:bg-gray-900 text-white font-semibold px-5 py-2.5 rounded-xl transition duration-200">
+                    Consultar
+                </button>
+            </div>
+            <div id="resumenAsistencia"></div>
+        </div>
+
+    </main>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const nombre = localStorage.getItem('nombre');
+        const apellido = localStorage.getItem('apellido');
+        const profesorId = parseInt(localStorage.getItem('profesorId'));
+        let estudiantesActuales = [];
+
+        if (!token) window.location.href = 'login.html';
+
+        document.getElementById('nombreProfesor').textContent = `${nombre} ${apellido}`;
+
+        // Establecer fecha de hoy por defecto
+        const hoy = new Date().toISOString().split('T')[0];
+        document.getElementById('fecha').value = hoy;
+
+        async function cargarAsignaturas() {
+            try {
+                const res = await fetch('http://127.0.0.1:8000/materias/colegio/1', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const materias = await res.json();
+                const selectMat = document.getElementById('materiaId');
+                const selectResumen = document.getElementById('materiaResumen');
+                materias.forEach(m => {
+                    const opt = `<option value="${m.id}">${m.nombre}</option>`;
+                    selectMat.innerHTML += opt;
+                    selectResumen.innerHTML += opt;
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function cargarEstudiantesPorGrado() {
+            const grado = document.getElementById('filtroGrado').value;
+            if (!grado) return;
+
+            try {
+                const res = await fetch(`http://127.0.0.1:8000/estudiantes/colegio/1/grado/${encodeURIComponent(grado)}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                estudiantesActuales = await res.json();
+
+                const selectResumen = document.getElementById('estudianteResumen');
+                selectResumen.innerHTML = '<option value="">Selecciona un estudiante</option>';
+                estudiantesActuales.forEach(e => {
+                    selectResumen.innerHTML += `<option value="${e.id}">${e.nombre} ${e.apellido}</option>`;
+                });
+
+                const lista = document.getElementById('listaAsistencia');
+                if (estudiantesActuales.length === 0) {
+                    lista.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm">No hay estudiantes en este grado</p>';
+                    return;
+                }
+
+                lista.innerHTML = `
+                    <div class="border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden">
+                        <div class="px-4 py-2 bg-gray-50 dark:bg-gray-700 flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Estudiante</span>
+                            <div class="flex gap-6">
+                                <span class="text-sm font-medium text-green-600">Presente</span>
+                                <span class="text-sm font-medium text-red-500">Ausente</span>
+                            </div>
+                        </div>
+                        ${estudiantesActuales.map(e => `
+                            <div class="px-4 py-3 flex items-center justify-between border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-blue-100 dark:bg-blue-900 rounded-full w-8 h-8 flex items-center justify-center">
+                                        <span class="text-blue-600 dark:text-blue-300 font-semibold text-xs">${e.nombre[0]}${e.apellido[0]}</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-800 dark:text-white">${e.nombre} ${e.apellido}</span>
+                                </div>
+                                <div class="flex gap-6 items-center">
+                                    <input type="radio" name="asistencia-${e.id}" value="true" checked
+                                        class="w-4 h-4 accent-green-500 cursor-pointer">
+                                    <input type="radio" name="asistencia-${e.id}" value="false"
+                                        class="w-4 h-4 accent-red-500 cursor-pointer">
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function guardarAsistencia() {
+            const materiaId = document.getElementById('materiaId').value;
+            const fecha = document.getElementById('fecha').value;
+            const errorDiv = document.getElementById('mensajeError');
+            const exitoDiv = document.getElementById('mensajeExito');
+
+            if (!materiaId || !fecha || estudiantesActuales.length === 0) {
+                errorDiv.textContent = 'Selecciona un grado, asignatura y fecha';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                for (const e of estudiantesActuales) {
+                    const presente = document.querySelector(`input[name="asistencia-${e.id}"]:checked`).value === 'true';
+                    await fetch('http://127.0.0.1:8000/asistencia/', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            estudiante_id: e.id,
+                            materia_id: parseInt(materiaId),
+                            profesor_id: profesorId,
+                            fecha: fecha,
+                            presente: presente
+                        })
+                    });
+                }
+
+                exitoDiv.textContent = 'Asistencia guardada correctamente';
+                exitoDiv.classList.remove('hidden');
+                errorDiv.classList.add('hidden');
+                setTimeout(() => exitoDiv.classList.add('hidden'), 2000);
+
+            } catch (error) {
+                errorDiv.textContent = 'Error al guardar la asistencia';
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        async function consultarResumen() {
+            const estudianteId = document.getElementById('estudianteResumen').value;
+            const materiaId = document.getElementById('materiaResumen').value;
+
+            if (!estudianteId || !materiaId) return;
+
+            try {
+                const res = await fetch(`http://127.0.0.1:8000/asistencia/resumen/${estudianteId}/${materiaId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.status === 404) {
+                    document.getElementById('resumenAsistencia').innerHTML =
+                        '<p class="text-gray-500 dark:text-gray-400 text-sm">No hay registros de asistencia</p>';
+                    return;
+                }
+
+                const datos = await res.json();
+                const porcentajeColor = datos.porcentaje_asistencia >= 80 ? 'text-green-600' : 'text-red-600';
+                const porcentajeBg = datos.porcentaje_asistencia >= 80 ? 'bg-green-50 dark:bg-green-900' : 'bg-red-50 dark:bg-red-900';
+
+                document.getElementById('resumenAsistencia').innerHTML = `
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 text-center">
+                            <p class="text-2xl font-bold text-gray-800 dark:text-white">${datos.total_clases}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Total clases</p>
+                        </div>
+                        <div class="bg-green-50 dark:bg-green-900 rounded-xl p-4 text-center">
+                            <p class="text-2xl font-bold text-green-600">${datos.clases_asistidas}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Asistidas</p>
+                        </div>
+                        <div class="${porcentajeBg} rounded-xl p-4 text-center">
+                            <p class="text-2xl font-bold ${porcentajeColor}">${datos.porcentaje_asistencia}%</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Asistencia</p>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('nombre');
+            localStorage.removeItem('apellido');
+            localStorage.removeItem('rol');
+            localStorage.removeItem('grado_asignado');
+            localStorage.removeItem('profesorId');
+            window.location.href = 'login.html';
+        }
+
+        function toggleModo() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            document.getElementById('iconoSol').classList.toggle('hidden');
+            document.getElementById('iconoLuna').classList.toggle('hidden');
+            localStorage.setItem('modo', html.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        if (localStorage.getItem('modo') === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.getElementById('iconoSol').classList.add('hidden');
+            document.getElementById('iconoLuna').classList.remove('hidden');
+        }
+
+        cargarAsignaturas();
+    </script>
+
+</body>
+</html>

@@ -42,3 +42,51 @@ def registrar_asistencia(
     db.commit()
     db.refresh(nuevo_registro)
     return nuevo_registro
+
+# Endpoint para obtener asistencia de un estudiante por asignatura
+
+@router.get("/estudiante/{estudiante_id}/materia/{materia_id}", response_model=List[AsistenciaRespuesta])
+def obtener_asistencia(
+    estudiante_id: int,
+    materia_id: int,
+    db: Session = Depends(get_db),
+    profesor_actual: Profesor = Depends(obtener_profesor_actual)
+):
+    registros = db.query(Asistencia).filter(
+        Asistencia.estudiante_id == estudiante_id,
+        Asistencia.materia_id == materia_id
+    ).all()
+    return registros
+
+# Endpoint para calcular resumen de asistencia
+
+@router.get("/resumen/{estudiante_id}/{materia_id}", response_model=ResumenAsistencia)
+def resumen_asistencia(
+    estudiante_id: int,
+    materia_id: int,
+    db: Session = Depends(get_db),
+    profesor_actual: Profesor = Depends(obtener_profesor_actual)
+):
+    total = db.query(Asistencia).filter(
+        Asistencia.estudiante_id == estudiante_id,
+        Asistencia.materia_id == materia_id
+    ).count()
+
+    asistidas = db.query(Asistencia).filter(
+        Asistencia.estudiante_id == estudiante_id,
+        Asistencia.materia_id == materia_id,
+        Asistencia.presente == True
+    ).count()
+
+    if total == 0:
+        raise HTTPException(status_code=404, detail="No hay registros de asistencia")
+
+    porcentaje = round((asistidas / total) * 100, 2)
+
+    return ResumenAsistencia(
+        estudiante_id=estudiante_id,
+        materia_id=materia_id,
+        total_clases=total,
+        clases_asistidas=asistidas,
+        porcentaje_asistencia=porcentaje
+    )
