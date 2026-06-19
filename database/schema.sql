@@ -39,10 +39,13 @@ CREATE TABLE IF NOT EXISTS profesores (
     rol VARCHAR(20) DEFAULT 'profesor',
     grado_asignado VARCHAR(20),
     materia_asignada_id INT,
+    celular VARCHAR(20),
+    foto_url VARCHAR(255),
     activo BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (colegio_id) REFERENCES colegios(id),
     FOREIGN KEY (materia_asignada_id) REFERENCES materias(id)
+    
 
 );
 

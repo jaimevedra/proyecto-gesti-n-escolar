@@ -16,6 +16,11 @@ class ProfesorRespuesta(BaseModel):
     nombre: str
     apellido: str
     email: Optional[str]
+    rol: Optional[str]
+    grado_asignado: Optional[str]
+    materia_asignada_id: Optional[int]
+    celular: Optional[str]
+    foto_url: Optional[str]
     activo: bool
     created_at: datetime
 

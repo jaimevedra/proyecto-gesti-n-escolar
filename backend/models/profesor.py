@@ -15,6 +15,8 @@ class Profesor(Base):
     rol = Column(String(20), default="profesor")
     grado_asignado = Column(String(20))
     materia_asignada_id = Column(Integer, ForeignKey("materias.id"), nullable=True)
+    celular = Column(String(20))
+    foto_url = Column(String(255))
     activo = Column(Boolean, default=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
 
