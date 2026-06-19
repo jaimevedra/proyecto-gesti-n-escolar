@@ -176,6 +176,21 @@
                 </div>
             </a>
 
+            <a href="registro-profesor.html" id="tarjetaRegistroProfesor" class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:border-amber-300 hover:shadow-md transition duration-200 flex items-center gap-4">
+                <div class="bg-amber-100 rounded-xl p-3">
+                    <svg width="24" height="24" fill="none" stroke="#D97706" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <line x1="19" y1="8" x2="19" y2="14"/>
+                        <line x1="22" y1="11" x2="16" y2="11"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="font-semibold text-gray-800 dark:text-white">Registrar profesor</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Crear nuevas cuentas de profesores</p>
+                </div>
+            </a>
+
         </div>
     </main>
 
@@ -190,6 +205,11 @@
 
         document.getElementById('nombreProfesor').textContent = `${nombre} ${apellido}`;
         document.getElementById('saludo').textContent = `Bienvenid@, ${nombre}`;
+
+        const rol = localStorage.getItem('rol');
+        if (rol === 'rector') {
+            document.getElementById('tarjetaRegistroProfesor').classList.remove('hidden');
+        }
 
         async function cargarDatos() {
             try {
