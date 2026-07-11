@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, TIMESTAMP, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, TIMESTAMP, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
@@ -16,7 +16,7 @@ class Profesor(Base):
     grado_asignado = Column(String(20))
     materia_asignada_id = Column(Integer, ForeignKey("materias.id"), nullable=True)
     celular = Column(String(20))
-    foto_url = Column(String(255))
+    foto_url = Column(Text)
     activo = Column(Boolean, default=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
 
