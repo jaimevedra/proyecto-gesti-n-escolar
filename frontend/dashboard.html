@@ -205,6 +205,19 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400">Administrar roles y asignaciones</p>
                 </div>
             </a>
+            
+            <a href="asignaturas.html" id="tarjetaAsignaturas" class="hidden bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 hover:border-green-300 hover:shadow-md transition duration-200 flex items-center gap-4">
+                <div class="bg-green-100 rounded-xl p-3">
+                    <svg width="24" height="24" fill="none" stroke="#16A34A" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="font-semibold text-gray-800 dark:text-white">Asignaturas</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Gestionar asignaturas del colegio</p>
+                </div>
+            </a>
  
         </div>
     </main>
@@ -225,6 +238,7 @@
         if (rol === 'rector') {
             document.getElementById('tarjetaRegistroProfesor').classList.remove('hidden');
             document.getElementById('tarjetaGestionProfesores').classList.remove('hidden');
+            document.getElementById('tarjetaAsignaturas').classList.remove('hidden');
         }
 
         async function cargarDatos() {
